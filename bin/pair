@@ -64,7 +64,7 @@ tunnel_port(){
 ssh(){
   clipboard_helper="reattach-to-user-namespace"
   port=$(tunnel_port)
-  ssh_command="ssh -p $port USERNAME@$ngrok_host"
+  ssh_command="ssh -p $port $(whoami)@$ngrok_host"
   echo $ssh_command
 
   if [ $(command -v $clipboard_helper) ]; then
