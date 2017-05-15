@@ -1,6 +1,6 @@
 #!/bin/sh # http://iamvery.com/2013/11/16/tmux-pairing-anywhere-on-your-box.html
 
-ngrok_host="0.tcp.ngrok.io"
+ngrok_host="0.tcp.eu.ngrok.io"
 
 command=$(basename $0)
 
@@ -46,7 +46,7 @@ up(){
     add $@
   fi
 
-  tmux new-session -d -s pairing "ngrok tcp 22"
+  tmux new-session -d -s pairing "ngrok tcp -region eu 22"
   tmux split-window
   sleep 1.5 # some delay so tunnel has time to get up
   tmux send-keys "pair ssh" C-m
