@@ -13,7 +13,7 @@ syntax on
 filetype plugin indent on
 
 " TODO: Pick a leader key
-" let mapleader = ","
+let mapleader =","
 
 " Security
 set modelines=0
@@ -129,6 +129,12 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'exitface/synthwave.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'AlessandroYorba/Despacio'
+Plugin 'tpope/vim-endwise'
+Plugin 'dkprice/vim-easygrep'
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-rhubarb'
+Plugin 'tpope/vim-surround'
+Plugin 'takac/vim-hardtime'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -160,3 +166,42 @@ if &term =~ '256color'
 endif
 
 colorscheme despacio
+
+map <leader>cf :let @*=expand('%')
+
+
+" Whitespace
+" Highlight EOL whitespace, http://vim.wikia.com/wiki/Highlight_unwanted_spaces
+highlight default ExtraWhitespace ctermbg=darkred guibg=darkred
+
+augroup whitespace
+    autocmd!
+
+    autocmd BufRead * match ExtraWhitespace /^\s\+$/
+
+    " The above flashes annoyingly while typing, be calmer in insert mode
+    autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+    autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+
+    " Remove trailing whitespace automatically on save
+    autocmd BufWrite * call TrimWhitespace()
+augroup END
+
+function! TrimWhitespace()
+    let l:save_cursor = getpos('.')
+
+    " Remove trailing whitespace at the end of lines
+    silent! execute ':%s/\s\+$//'
+
+    " Remove trailing newlines at the end of file
+    silent! execute ':%s/\($\n\s*\)\+\%$//'
+
+    call setpos('.', l:save_cursor)
+endfunction
+
+command! TrimWhitespace call TrimWhitespace()
+
+augroup hardtime
+  autocmd!
+  autocmd BufRead * call HardTimeOn()
+augroup END
