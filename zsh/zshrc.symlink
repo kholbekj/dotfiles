@@ -53,7 +53,8 @@ fi
 
 # install rbenv
 if command_exists rbenv; then
-    eval "$(rbenv init -)"
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
 fi
 
 if [[ -d ~/.rvm ]]; then

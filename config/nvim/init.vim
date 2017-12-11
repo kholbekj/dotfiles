@@ -50,6 +50,10 @@ runtime! macros/matchit.vim
 nnoremap j gj
 nnoremap k gk
 
+" Scroll faster
+nnoremap <C-e> 3<C-e>
+nnoremap <C-y> 3<C-y>
+
 " Allow hidden buffers
 set hidden
 
@@ -127,14 +131,19 @@ Plugin 'VundleVim/Vundle.vim'
 
 " All of your Plugins must be added before the following line
 Plugin 'exitface/synthwave.vim'
-Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'AlessandroYorba/Despacio'
+Plugin 'AlessandroYorba/Alduin'
 Plugin 'tpope/vim-endwise'
 Plugin 'dkprice/vim-easygrep'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-rhubarb'
 Plugin 'tpope/vim-surround'
 Plugin 'takac/vim-hardtime'
+Plugin 'severin-lemaignan/vim-minimap'
+Plugin 'whatyouhide/vim-gotham'
+Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plugin 'junegunn/fzf.vim'
+Plugin 'junegunn/vim-easy-align'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -152,12 +161,13 @@ filetype plugin indent on    " required
 "set background=dark
 "color synthwave
 
-if has('termguicolors')
-  set termguicolors " 24-bit terminal
-else
-  let g:synthwave_termcolors=256 " 256 color mode
-endif
+"if has('termguicolors')
+"  set termguicolors " 24-bit terminal
+"else
+"  let g:synthwave_termcolors=256 " 256 color mode
+"endif
 "color monrovia
+
 set clipboard=unnamed
 
 if &term =~ '256color'
@@ -165,7 +175,7 @@ if &term =~ '256color'
     set t_ut=
 endif
 
-colorscheme despacio
+colorscheme gotham
 
 map <leader>cf :let @*=expand('%')
 
@@ -201,7 +211,43 @@ endfunction
 
 command! TrimWhitespace call TrimWhitespace()
 
-augroup hardtime
-  autocmd!
-  autocmd BufRead * call HardTimeOn()
-augroup END
+" augroup hardtime
+"   autocmd!
+"   autocmd BufRead * call HardTimeOn()
+" augroup END
+set grepprg=ag\ --nogroup\ --nocolor\ --vimgrep
+let g:EasyGrepCommand=1
+let g:EasyGrepRecursive=1
+
+nnoremap <leader>l :ls<CR>:b<space>
+
+" fzf
+imap     <c-x><c-l> <plug>(fzf-complete-line)
+nnoremap <C-p>      :FZF<CR>
+nnoremap <M-x>      :Commands<CR>
+nnoremap <leader>t  :Files<cr>
+nnoremap <leader>b  :Buffers<cr>
+let g:fzf_commands_expect = 'enter'
+
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
+" Luki's black magic
+function! s:toggle_spec()
+  let extension = expand("%:e")
+  let name = expand("%:t")
+  let folder = expand("%:h:t")
+  if stridx(name, '_spec') == -1
+    return '/' . folder . '/' . substitute(name, '.' . extension, '_spec.' . extension, '')
+  else
+    return '/' . folder . '/' . substitute(name, '_spec.' . extension, '.' . extension, '')
+  endif
+endfunction
+
+nnoremap <silent> <c-s> :ToggleSpec<CR>
+
+command! -bang -nargs=? -complete=dir ToggleSpec
+    \ call fzf#vim#files('', {'options': '-q"' . s:toggle_spec() .'$ "'})
